@@ -10,19 +10,16 @@ use Symfony\Component\Routing\RouterInterface;
 final class IndexUrlProvider implements IndexUrlProviderInterface
 {
     /** @var UrlProviderInterface[] */
-    private $providers = [];
+    private array $providers = [];
 
-    /** @var RouterInterface */
-    private $router;
+    private RouterInterface $router;
 
-    /** @var IndexUrlFactoryInterface */
-    private $sitemapIndexUrlFactory;
-
-    /** @var array */
-    private $urls = [];
+    private IndexUrlFactoryInterface $sitemapIndexUrlFactory;
 
     /** @var array */
     private $paths = [];
+  
+    private $urls = [];
 
     public function __construct(
         RouterInterface $router,
@@ -50,6 +47,7 @@ final class IndexUrlProvider implements IndexUrlProviderInterface
 
                 $this->urls[] = $this->sitemapIndexUrlFactory->createNew($location);
             }
+          
         }
 
         return $this->urls;

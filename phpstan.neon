@@ -1,17 +1,18 @@
-includes:
-    - vendor/phpstan/phpstan-doctrine/extension.neon
-    - vendor/phpstan/phpstan-webmozart-assert/extension.neon
-
 parameters:
     reportUnmatchedIgnoredErrors: true
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
 
-    excludes_analyse:
+    excludePaths:
         # Makes PHPStan crash
         - 'src/DependencyInjection/Configuration.php'
-
-        # todo remove this in v2
-        - 'src/Provider/ProductUrlProvider.php'
 
         # Test dependencies
         - 'tests/Application/app/**.php'
         - 'tests/Application/src/**.php'
+
+    ignoreErrors:
+        -
+            message: "#^Method SitemapPlugin\\\\Command\\\\GenerateSitemapCommand\\:\\:channels\\(\\) should return iterable\\<int, Sylius\\\\Component\\\\Core\\\\Model\\\\ChannelInterface\\> but returns array\\<int, Sylius\\\\Component\\\\Resource\\\\Model\\\\ResourceInterface\\>\\.$#"
+            count: 2
+            path: src/Command/GenerateSitemapCommand.php

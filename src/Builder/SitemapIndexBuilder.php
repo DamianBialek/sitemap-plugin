@@ -11,14 +11,13 @@ use SitemapPlugin\Provider\UrlProviderInterface;
 
 final class SitemapIndexBuilder implements SitemapIndexBuilderInterface
 {
-    /** @var SitemapIndexFactoryInterface */
-    private $sitemapIndexFactory;
+    private SitemapIndexFactoryInterface $sitemapIndexFactory;
 
-    /** @var array */
-    private $providers = [];
+    /** @var UrlProviderInterface[] */
+    private array $providers = [];
 
-    /** @var array */
-    private $indexProviders = [];
+    /** @var IndexUrlProviderInterface[] */
+    private array $indexProviders = [];
 
     /** @var array */
     private $paths = [];
@@ -28,20 +27,18 @@ final class SitemapIndexBuilder implements SitemapIndexBuilderInterface
         $this->sitemapIndexFactory = $sitemapIndexFactory;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function addProvider(UrlProviderInterface $provider): void
     {
         $this->providers[] = $provider;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function addIndexProvider(IndexUrlProviderInterface $provider): void
+    public function addIndexProvider(IndexUrlProviderInterface $indexProvider): void
     {
-        $this->indexProviders[] = $provider;
+        foreach ($this->providers as $provider) {
+            $indexProvider->addProvider($provider);
+        }
+
+        $this->indexProviders[] = $indexProvider;
     }
 
     /**
@@ -59,18 +56,18 @@ final class SitemapIndexBuilder implements SitemapIndexBuilderInterface
     /**
      * {@inheritdoc}
      */
+
     public function build(): SitemapInterface
     {
         $sitemap = $this->sitemapIndexFactory->createNew();
         $urls = [];
 
-        /** @var IndexUrlProviderInterface $indexProvider */
         foreach ($this->indexProviders as $indexProvider) {
             /** @var UrlProviderInterface $provider */
             foreach ($this->providers as $provider) {
                 $indexProvider->addProvider($provider, $this->paths[$provider->getName()]);
             }
-
+          
             $urls[] = $indexProvider->generate();
         }
 
